@@ -41,10 +41,14 @@ kube-prometheus-stack:
       type: LoadBalancer
 
   # Node exporter - DISABLE (k8s-monitoring deploys via clusterMetrics)
+  nodeExporter:
+    enabled: false
   prometheus-node-exporter:
     enabled: false
 
   # Kube-state-metrics - DISABLE (k8s-monitoring deploys its own)
+  kubeStateMetrics:
+    enabled: false
   kube-state-metrics:
     enabled: false
 
