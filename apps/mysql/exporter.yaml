@@ -1,14 +1,4 @@
 apiVersion: v1
-kind: Secret
-metadata:
-  name: mysql-exporter-secret
-  namespace: mysql
-type: Opaque
-stringData:
-  # Password for the exporter user
-  MYSQLD_EXPORTER_PASSWORD: "exporterpassword"
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql-exporter-config
@@ -17,6 +7,7 @@ data:
   .my.cnf: |
     [client]
     user=exporter
+    password=exporterpassword
     host=mysql
     port=3306
 ---
@@ -48,12 +39,6 @@ spec:
           ports:
             - containerPort: 9104
               name: metrics
-          env:
-            - name: MYSQLD_EXPORTER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-exporter-secret
-                  key: MYSQLD_EXPORTER_PASSWORD
           args:
             - --config.my-cnf=/etc/mysql-exporter/.my.cnf
             - --collect.info_schema.processlist
