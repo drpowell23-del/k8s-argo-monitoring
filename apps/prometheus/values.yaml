@@ -1,57 +1,38 @@
-kube-prometheus-stack:
-  # Disable Grafana - we deploy it separately
-  grafana:
-    enabled: false
+# Prometheus (standalone) - Lab Configuration
+# Chart: prometheus 27.0.0
 
-  # Disable Alertmanager for lab
+prometheus:
+  # Disable components we don't need
   alertmanager:
     enabled: false
 
-  # Prometheus server config
-  prometheus:
-    prometheusSpec:
-      # Enable remote write receiver for Tempo metrics
-      enableRemoteWriteReceiver: true
-      
-      # Storage
-      storageSpec:
-        volumeClaimTemplate:
-          spec:
-            storageClassName: gp3
-            accessModes: ["ReadWriteOnce"]
-            resources:
-              requests:
-                storage: 10Gi
-
-      # Resources
-      resources:
-        requests:
-          cpu: 250m
-          memory: 512Mi
-        limits:
-          cpu: 500m
-          memory: 1Gi
-
-      # Scrape all ServiceMonitors across namespaces
-      serviceMonitorSelectorNilUsesHelmValues: false
-      podMonitorSelectorNilUsesHelmValues: false
-      ruleSelectorNilUsesHelmValues: false
-
-    service:
-      type: LoadBalancer
-
-  # Node exporter - DISABLE (k8s-monitoring deploys via clusterMetrics)
-  nodeExporter:
-    enabled: false
-  prometheus-node-exporter:
+  prometheus-pushgateway:
     enabled: false
 
-  # Kube-state-metrics - DISABLE (k8s-monitoring deploys its own)
-  kubeStateMetrics:
-    enabled: false
   kube-state-metrics:
     enabled: false
 
-  # Install CRDs (required for ServiceMonitor)
-  crds:
-    enabled: true
+  prometheus-node-exporter:
+    enabled: false
+
+  # Prometheus server
+  server:
+    service:
+      type: LoadBalancer
+
+    # Enable remote write receiver for Alloy/Tempo
+    extraFlags:
+      - "web.enable-remote-write-receiver"
+
+    persistentVolume:
+      enabled: true
+      storageClass: "gp3"
+      size: 10Gi
+
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi

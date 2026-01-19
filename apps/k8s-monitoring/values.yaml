@@ -6,8 +6,8 @@ k8s-monitoring:
   destinations:
     - name: prometheus
       type: prometheus
-      # kube-prometheus-stack service name
-      url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write
+      # prometheus chart server service name
+      url: http://prometheus-server.monitoring.svc:80/api/v1/write
     - name: loki
       type: loki
       url: http://loki.monitoring.svc:3100/loki/api/v1/push
